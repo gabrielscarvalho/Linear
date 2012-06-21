@@ -22,7 +22,14 @@ class Page {
     public function beforePageLoad() {
         
     }
-
+    /**
+     * Retorna o head da página
+     * 
+     */
+    public function getScriptnCss(){
+        return file_get_contents($this->getPageHtml('page/head.php'));
+    }
+    
     /**
      * Retorna o titulo da página
      */
