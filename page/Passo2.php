@@ -59,6 +59,18 @@ class Page_Passo2 extends Page {
         $this->getPageHtml('passo2/form.php', true);
     }
 
+    /**
+     * Retorna as variáveis da função objetivo para o design
+     * @return      string
+     */
+    public function getObjetivoVarsHtml(){
+        $html = '';
+        for($x = 1 ; $x <= $this->getQtyVars();$x++){
+            $div = ($x > 1) ? ', ' : '';
+            $html.= $div.'x'.$x;
+        }
+        return $html;
+    }
 }
 
 ?>
