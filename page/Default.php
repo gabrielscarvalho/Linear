@@ -13,15 +13,14 @@ class Page_Default extends Page {
         return 'Página Inicial';
     }
 
-    
     /**
-     * Retorna o corpo
+     * Retorna o corpo da página default.
+     * @return      string
      */
     public function getBody() {
-        $page = $this->getPageHtml('default/body.php');
-        return file_get_contents($page);
+        return $this->getPageHtml('default/form.php', true);
     }
-    
+
 }
 
 ?>
