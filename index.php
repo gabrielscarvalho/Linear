@@ -17,7 +17,7 @@ ini_set('display_errors', '1');
         <?php $_page->getScriptnCss(); ?>
     </head>
     <body>
-        <div class="span12">
+        <div>
             <div class="page-header">
                 <?php $_page->getHeader(); ?>
             </div>

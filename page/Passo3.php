@@ -54,6 +54,7 @@ class Page_Passo3 extends Page {
     public function getSimplexData() {
         return $this->_simplexData;
     }
+    
 
 }
 
