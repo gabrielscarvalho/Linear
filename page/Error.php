@@ -1,37 +1,42 @@
 <?php
+
 /**
  * Classe da página Error.
  * @author      Gabriel
  */
-class Page_Error extends Page{
-    
-    protected $code;
-    protected $message;
-    
-     /**
+class Page_Error extends Page {
+
+    public $code;
+    public $message;
+
+    /**
      * Retorna o titulo da página
+     * @return         string
      */
     public function getTitle() {
         return 'Ocorreu um erro!';
     }
-    
+
+    /**
+     * Antes de carregar a página, veja isso.
+     */
     public function beforePageLoad() {
-        if(isset($_SESSION['error.code'])){
-            $this->code = $_SESSION['error.code'];
-            unset($_SESSION['error.code']);
-        }
-        
-        if(isset($_SESSION['error.message'])){
-            $this->message = $_SESSION['error.message'];
-            unset($_SESSION['error.message']);
-        }
+
+        $this->code = Core::getSession('error.code', $default = '404');
+        Core::unsSession('error.code');
+
+        $this->message = Core::getSession('error.message', $default = 'Página não encontrada.');
+        Core::unsSession('error.message');
     }
-    
-    
+
+    /**
+     * Retorna o corpo da página de erro.
+     * @author      Gabriel Santos Carvalho
+     */
     public function getBody() {
-        return $this->code.' - '.$this->message;
+        $this->getPageHtml('error/body.php', true);
     }
-    
-    
+
 }
+
 ?>

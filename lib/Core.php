@@ -85,5 +85,28 @@ class Core {
         return $default;
     }
 
+    /**
+     * Retorna uma sessão.
+     * @param       string $name A variável do $_SESSION[$name]
+     * @param       string $default O que retornar caso não encontre a variável $_SESSION[$name] ?
+     * @return      string
+     */
+    public static function getSession($name, $default) {
+        if (isset($_SESSION[$name])) {
+            return $_SESSION[$name];
+        }
+        return $default;
+    }
+       
+    /**
+     * Apaga uma sessão.
+     * @param       string $name A variável do $_SESSION[$name] a ser apagada.
+     * @return      void
+     */
+    public static function unsSession($name){
+        if (isset($_SESSION[$name])) {
+            unset($_SESSION[$name]);
+        }
+    }
 }
 
