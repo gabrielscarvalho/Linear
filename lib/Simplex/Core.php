@@ -93,6 +93,7 @@ class Simplex_Core {
     protected $Cn = array();
     protected $calculoCustos = array();
     protected $calculoDirecaoSimplex = array();
+    protected $basicIndexes = array();
 
     /**
      * Seta a quantidade de funções.
@@ -390,6 +391,8 @@ class Simplex_Core {
 
         $qtyXs = range(0, ($this->getQtyVars() - 1));
 
+        $this->basicIndexes = $indexesBasic;
+
         $indexesNotBasic = (array_diff($qtyXs, $indexesBasic));
 
         for ($function = 0; $function < $this->getQtyFunctions(); $function++) {
@@ -455,7 +458,6 @@ class Simplex_Core {
         $this->getValorFuncaoObjetivo();
         $this->getValorLambida();
         $this->calcularCustoRelativo();
-        $this->calculoDirecaoSimplex();
     }
 
     /**
@@ -503,6 +505,7 @@ class Simplex_Core {
      */
     protected function calcularCustoRelativo() {
         $cn = $this->Cn;
+        $usarSimplex = false;
 
         $this->calculoCustos = array();
 
@@ -519,8 +522,15 @@ class Simplex_Core {
             $resultado = $valor - $resultado;
             //@todo: Lembrar de fazer a parte de verificar se é ótima 
             //SE resultado < 0 : fodeu.
-
+            if ($resultado < 0) {
+                $usarSimplex = true;
+            }
             $this->calculoCustos[$pos] = $resultado;
+        }
+        if ($usarSimplex) {
+            $this->calculoDirecaoSimplex();
+        }else{
+            echo "O programa finalizou!";
         }
     }
 
@@ -542,24 +552,25 @@ class Simplex_Core {
 
 
         $menor = min($this->calculoCustos);
-        $indMenorCusto = null;
-        
+
+        $indiceNviraB = null;
+
         foreach ($this->calculoCustos as $ind => $valor) {
             if ($valor == $menor) {
-                $indMenorCusto = $ind;
+                $indiceNviraB = $ind;
             }
         }
-        
-        $n = $this->getColuna($this->N, $indMenorCusto);
-        
+
+        $n = $this->getColuna($this->N, $indiceNviraB);
+
 
         $binversa = array_values($this->Binversa);
         foreach ($binversa as $linha => $dados) {
             $binversa[$linha] = array_values($dados);
         }
 
-        $results = $this->results;
-      
+        $xBasicos = $this->xBasico;
+
 
 
 
@@ -574,23 +585,43 @@ class Simplex_Core {
         $this->calculoDirecaoSimplex = $y;
 
         $e = array();
-        foreach ($results as $pos => $valor) {
-            if ($y[$pos] > 0) {
-                $e[] = $valor / $y[$pos];
-            }
-        }
-        //min($e);
-        $e = min($e);
-        
         $indY = 0;
-        
-        foreach($results as $xPos => $valor){
-            if($valor - ($y[$indY] * $e) == 0){
-                //Achamos a que será trocada!
-                
+        foreach ($xBasicos as $pos => $valor) {
+            if ($y[$indY] > 0) {
+                $e[] = $valor / $y[$indY];
             }
             $indY++;
         }
+        //min($e);
+        $e = min($e);
+
+        $indY = 0;
+
+        $indiceBviraN = null;
+        foreach ($xBasicos as $xPos => $valor) {
+            if ($valor - ($y[$indY] * $e) == 0) {
+                //Achamos a que será trocada!
+                $indiceBviraN = $xPos;
+            }
+            $indY++;
+        }
+
+        $basicIndexes = $this->basicIndexes; //array(2,3,4);
+
+        foreach ($basicIndexes as $pos => $varX) {
+            if ($varX == $indiceBviraN) {
+                $basicIndexes[$pos] = $indiceNviraB;
+                break;
+            }
+        }
+
+        $this->setQtyFunctions($this->getQtyFunctions())
+                ->setQtyVars($this->getQtyVars())
+                ->setFunObj($this->funObj)
+                ->setFunctionEquality($this->functionEquality)
+                ->setXs($this->xs)
+                ->setResults($this->results)
+                ->setBasicIndexes($basicIndexes);
     }
 
     /**

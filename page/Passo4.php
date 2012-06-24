@@ -33,8 +33,7 @@ class Page_Passo4 extends Page {
                 ->setFunObj(Core::getPost('obj', array()))
                 ->setFunctionEquality(Core::getPost('sign', array()))
                 ->setXs(Core::getPost('xs', array()))
-                ->setResults(Core::getPost('result', array()))
-                ->setBasicIndexes(Core::getPost('basic', array()));
+                ->setResults(Core::getPost('result', array()));
 
 
         $this->_simplexData = $_passo3;
@@ -45,10 +44,7 @@ class Page_Passo4 extends Page {
      * @return      string
      */
     public function getBody() {
-        #$this->getPageHtml('passo3/form.php', true);
-        $this->_simplexData->_printAll();
-        
-        
+        $this->_simplexData->setBasicIndexes(Core::getPost('basic', array()));
     }
 
     /**
