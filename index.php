@@ -2,6 +2,7 @@
 require_once "lib/Core.php";
 require_once 'lib/Layout.php';
 require_once 'lib/Page.php';
+require_once 'lib/Vetor/Math.php';
 Core::initSession();
 $_layout = new Layout();
 $_page = $_layout->getPage();
@@ -22,7 +23,7 @@ ini_set('display_errors', '1');
                 <?php $_page->getHeader(); ?>
             </div>
             <div class="container-fluid" >
-                <?php echo $_page->getMessagesBlockHtml(); //As mensagens geradas.  ?>
+                <?php echo $_page->getMessagesBlockHtml(); //As mensagens geradas.    ?>
                 <?php $_page->getBody(); ?>
             </div>
             <hr/>
