@@ -67,7 +67,7 @@ class Simplex_Core {
      * @var         array $lambida
      */
     protected $lambida = array();
-    
+
     /**
      * Guarda o x^b
      * @var         array $Binversa
@@ -91,6 +91,8 @@ class Simplex_Core {
      * @var         array $Cn
      */
     protected $Cn = array();
+    protected $calculoCustos = array();
+    protected $calculoDirecaoSimplex = array();
 
     /**
      * Seta a quantidade de funções.
@@ -328,6 +330,10 @@ class Simplex_Core {
         $this->printTable($this->xBasico);
         echo '<br/> Lambida:';
         $this->printTable($this->lambida);
+        echo '<br> Calculo custos relativos:';
+        $this->printTable($this->calculoCustos);
+        echo '<BR/> Y do calculo da direcao simplex:';
+        $this->printTable($this->calculoDirecaoSimplex);
 
         echo '<br/>Qtd Function: ' . $this->qtyFunctions;
         echo '<br/>Qtd Vars:' . $this->qtyVars;
@@ -448,6 +454,8 @@ class Simplex_Core {
         $this->xBasico = $xBasicoCopia;
         $this->getValorFuncaoObjetivo();
         $this->getValorLambida();
+        $this->calcularCustoRelativo();
+        $this->calculoDirecaoSimplex();
     }
 
     /**
@@ -471,13 +479,12 @@ class Simplex_Core {
 
         $cbT = array_values($this->Cb);
         $binversa = array_values($this->Binversa);
-        foreach($binversa as $linha => $dados){
+        foreach ($binversa as $linha => $dados) {
             $binversa[$linha] = array_values($dados);
-            
         }
-        
+
         $resultado = array();
-        
+
         foreach ($cbT as $coluna => $multiplicador) {
             $colunaMultiplicador = 0;
             $resultado[$coluna] = 0;
@@ -488,6 +495,102 @@ class Simplex_Core {
         }
 
         $this->lambida = $resultado;
+    }
+
+    /**
+     * Calcula o custo relativo.
+     * Custo não básicas x
+     */
+    protected function calcularCustoRelativo() {
+        $cn = $this->Cn;
+
+        $this->calculoCustos = array();
+
+        foreach ($cn as $pos => $valor) {
+
+            $naoBasica = $this->getColuna($this->N, $pos);
+
+            $resultado = 0;
+            foreach ($this->lambida as $linha => $valorLambida) {
+                $resultado = $resultado + $this->lambida[$linha] * $naoBasica[$linha];
+            }
+
+
+            $resultado = $valor - $resultado;
+            //@todo: Lembrar de fazer a parte de verificar se é ótima 
+            //SE resultado < 0 : fodeu.
+
+            $this->calculoCustos[$pos] = $resultado;
+        }
+    }
+
+    /**
+     * Retorna uma coluna de um vetor.
+     * 
+     */
+    public function getColuna($vetor, $coluna) {
+
+        $resposta = array();
+
+        foreach ($vetor as $linha => $dados) {
+            $resposta[] = $dados[$coluna];
+        }
+        return $resposta;
+    }
+
+    protected function calculoDirecaoSimplex() {
+
+
+        $menor = min($this->calculoCustos);
+        $indMenorCusto = null;
+        
+        foreach ($this->calculoCustos as $ind => $valor) {
+            if ($valor == $menor) {
+                $indMenorCusto = $ind;
+            }
+        }
+        
+        $n = $this->getColuna($this->N, $indMenorCusto);
+        
+
+        $binversa = array_values($this->Binversa);
+        foreach ($binversa as $linha => $dados) {
+            $binversa[$linha] = array_values($dados);
+        }
+
+        $results = $this->results;
+      
+
+
+
+        $y = array();
+        foreach ($binversa as $linhaAtual => $dadosColunas) {
+            $y[$linhaAtual] = 0;
+
+            foreach ($dadosColunas as $colunaAtual => $valor) {
+                $y[$linhaAtual]+= $valor * $n[$colunaAtual];
+            }
+        }
+        $this->calculoDirecaoSimplex = $y;
+
+        $e = array();
+        foreach ($results as $pos => $valor) {
+            if ($y[$pos] > 0) {
+                $e[] = $valor / $y[$pos];
+            }
+        }
+        //min($e);
+        $e = min($e);
+        
+        $indY = 0;
+        
+        foreach($results as $xPos => $valor){
+            if($valor - ($y[$indY] * $e) == 0){
+                //Achamos a que será trocada!
+                
+            }
+            $indY++;
+        }
     }
 
     /**
