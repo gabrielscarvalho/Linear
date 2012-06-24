@@ -8,7 +8,8 @@
  * @version     1.0
  */
 class Simplex_Passo3 extends Simplex_Core {
-
+    
+    
     /**
      * Adiciona a variável de folga para cada restrição.
      * @author      Gabriel Santos Carvalho
@@ -30,6 +31,9 @@ class Simplex_Passo3 extends Simplex_Core {
         $this->qtyVars = $varPosition;
         
     }
+    
+    
+    
 
 }
 ?>

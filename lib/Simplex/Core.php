@@ -45,6 +45,18 @@ class Simplex_Core {
     protected $funObj = array();
 
     /**
+     * Contém o vetor das variáveis básicas.
+     * @var         array $B
+     */
+    protected $B = array();
+
+    /**
+     * Contém o vetor das variáveis não básicas.
+     * @var         array $N
+     */
+    protected $N = array();
+
+    /**
      * Seta a quantidade de funções.
      * @author      Gabriel Santos Carvalho
      * @version     1.0
@@ -242,13 +254,50 @@ class Simplex_Core {
      */
     public function _printAll() {
         echo '<pre>';
+        echo '<br/> Func Obj:';
         print_r($this->funObj);
+        echo '<br/> Xs:';
         print_r($this->xs);
+        echo '<br/>Signal:';
         print_r($this->functionEquality);
+        echo '<br/>Results:';
         print_r($this->results);
+        echo '<br/> Basics:';
+        print_r($this->B);
+        echo '<br/> Not Basics:';
+        print_r($this->N);
+        
         echo '<br/>Qtd Function: ' . $this->qtyFunctions;
         echo '<br/>Qtd Vars:' . $this->qtyVars;
         echo '</pre>';
+    }
+
+    /**
+     * Seta quais são as variáveis básicas passando o índice de cada.
+     * @author          Gabriel Santos Carvalho
+     * @version         1.0
+     * @since           22/06/2012
+     * @param           array $indexesBasic
+     * @example         array(1,2,4) //x1, x2 e x4 serão básicas.
+     */
+    public function setBasicIndexes($indexesBasic) {
+        $notBasics = $basics = array();
+
+        $qtyXs = range(0, $this->getQtyFunctions());
+
+        $indexesNotBasic = (array_diff($qtyXs, $indexesBasic));
+
+        for ($function = 0; $function < $this->getQtyFunctions(); $function++) {
+            foreach ($indexesBasic as $xPos) {
+                $basics[$function][$xPos] = $this->getXValor($function, $xPos, 0);
+            }
+
+            foreach ($indexesNotBasic as $xPos) {
+                $notBasics[$function][$xPos] = $this->getXValor($function, $xPos, 0);
+            }
+        }
+        $this->B = $basics;
+        $this->N = $notBasics;
     }
 
     /**

@@ -21,10 +21,6 @@ ini_set('display_errors', '1');
             <div class="page-header">
                 <?php $_page->getHeader(); ?>
             </div>
-            
-
-            
-
             <div class="container-fluid" >
                 <?php echo $_page->getMessagesBlockHtml(); //As mensagens geradas.  ?>
                 <?php $_page->getBody(); ?>

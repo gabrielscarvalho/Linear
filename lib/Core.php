@@ -78,7 +78,7 @@ class Core {
      * @param       string $default O que retornar caso não encontre a variável $_POST[$name] ?
      * @return      string
      */
-    public static function getPost($name, $default) {
+    public static function getPost($name, $default = false) {
         if (isset($_POST[$name])) {
             return $_POST[$name];
         }
