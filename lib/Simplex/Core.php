@@ -94,6 +94,8 @@ class Simplex_Core {
     protected $calculoCustos = array();
     protected $calculoDirecaoSimplex = array();
     protected $basicIndexes = array();
+    
+    
 
     /**
      * Seta a quantidade de funções.
@@ -293,49 +295,36 @@ class Simplex_Core {
      */
     public function _printAll() {
         echo '<pre>';
-        echo '<br/> Func Obj:';
+        echo '<br/> Valores da função objetivo:';
         $this->printTable($this->funObj);
-        echo '<br/> Xs:';
+        echo '<br/> A:';
         $this->printTable($this->xs);
-        echo '<br/>Signal:';
-        $this->printTable($this->functionEquality);
-        echo '<br/>Results:';
-        $this->printTable($this->results);
-        echo '<br/> Basics:';
+        echo '<br/> B:';
         $this->printTable($this->B);
-
-
-
-        $cleanB = array();
-        $i = 1;
-        foreach ($this->B as $ind => $data) {
-            $j = 1;
-            foreach ($data as $ind2 => $valor) {
-                $cleanB[$i][$j] = $valor;
-                $j++;
-            }
-            $i++;
-        }
-        echo '<BR/>Clean B:';
-        $this->printTable($cleanB);
-        echo '<br/> Basic Inverse:';
-        $this->printTable(Vetor_Math::MatrizInversa($cleanB, 5, 3, 3));
-
-        echo '<br/> Non Basics:';
+        echo '<br/> N:';
         $this->printTable($this->N);
-        echo '<br/> Cost Basics:';
+        echo '<br/>b';
+        $this->printTable($this->results);
+        echo '<br/> CtB:';
         $this->printTable($this->Cb);
-        echo '<br/> Cost Non Basics:';
+        echo '<br/> CtN:';
         $this->printTable($this->Cn);
-        echo '<br/> X basicos:';
+        echo '<br/> ^xB:';
         $this->printTable($this->xBasico);
-        echo '<br/> Lambida:';
+        echo '<br/> &lambda;:';
         $this->printTable($this->lambida);
-        echo '<br> Calculo custos relativos:';
+        echo '<br/> Basic Indexes:';
+        $this->printTable($this->basicIndexes);
+        echo '<br/> B-¹:';
+        $this->printTable($this->Binversa);
+        
+        echo '<br> C^ (Calculo dos Custos Relativos):';
         $this->printTable($this->calculoCustos);
+        
         echo '<BR/> Y do calculo da direcao simplex:';
         $this->printTable($this->calculoDirecaoSimplex);
 
+        
         echo '<br/>Qtd Function: ' . $this->qtyFunctions;
         echo '<br/>Qtd Vars:' . $this->qtyVars;
         echo '<br/>Valor Função Objetivo:' . $this->valorFunObj;
@@ -391,11 +380,12 @@ class Simplex_Core {
 
         $qtyXs = range(0, ($this->getQtyVars() - 1));
 
-        $this->basicIndexes = $indexesBasic;
+       
 
         $indexesNotBasic = (array_diff($qtyXs, $indexesBasic));
 
         for ($function = 0; $function < $this->getQtyFunctions(); $function++) {
+
             foreach ($indexesBasic as $xPos) {
                 $basics[$function][$xPos] = $this->getXValor($function, $xPos, 0);
                 $Cb[$xPos] = $this->getFunObjValor($xPos, 0);
@@ -412,7 +402,7 @@ class Simplex_Core {
         $this->Cb = $Cb;
         $this->N = $notBasics;
         $this->Cn = $Cn;
-
+        $this->basicIndexes = $indexesBasic;
 
 
         $cleanB = array();
@@ -530,8 +520,15 @@ class Simplex_Core {
         if ($usarSimplex) {
             $this->calculoDirecaoSimplex();
         }else{
-            echo "O programa finalizou!";
+            $this->imprimirSolucao();
         }
+    }
+    
+    /**
+     * Imprime a solução do sistema.
+     */
+    protected function imprimirSolucao(){
+        $this->_printAll();
     }
 
     /**
